@@ -87,6 +87,10 @@ class UserView(ListAPIView):
             return Response({"message" : "Invalid Request"} , status = status.HTTP_400_BAD_REQUEST)
         
 
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
    
 # class LoginView(ListAPIView):
 #     def post(self,req):
@@ -111,5 +115,3 @@ class UserView(ListAPIView):
 #             return Response({ "message" : "Invalid Username and Password"} , status=status.HTTP_400_BAD_REQUEST)
         
 
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
