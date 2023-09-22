@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'userapp',
+    'properties',
     'corsheaders',
     'rest_framework_simplejwt',
 
@@ -107,6 +108,13 @@ DATABASES = {
         'HOST': 'localhost', 
     }
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_HOST_USER = 'jyothikact10@gmail.com'
+EMAIL_HOST_PASSWORD = 'htnvwvfsquztckmi'
+EMAIL_PORT = 587
 
 
 # Password validation

@@ -26,4 +26,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['name'] = f'{user.first_name} {user.last_name}'
         token['is_active'] = user.is_active
 
-        return token        
+        return token    
+
+
+# class VerifyAccountSerializer(serializers.Serializer):
+#     email = serializers.EmailField()    
+#     otp = serializers.CharField()    

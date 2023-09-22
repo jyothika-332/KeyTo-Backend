@@ -21,3 +21,8 @@ class User(AbstractUser):
     address = models.TextField(null=True,blank=True,default=None)
     profile_image = models.ImageField(upload_to='profileImage',null=True,blank=True,default=None)
     id_card_image = models.ImageField(upload_to='IDcard',null=True,blank=True,default=None)
+
+
+class User_otp(models.Model):
+    email = models.CharField(max_length=250,null=True,blank=True,default=None)
+    otp = models.BigIntegerField(null=True)

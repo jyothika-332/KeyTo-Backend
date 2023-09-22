@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import *  
 from .serializers import *
+from .email import *
 from rest_framework import status
 from rest_framework.settings import api_settings
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -17,8 +18,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class UserView(ListAPIView):
-    def get(self,req):
-       
+    def get(self,req):  
         try:
             id = self.request.GET.get("id")
         except:
@@ -33,8 +33,8 @@ class UserView(ListAPIView):
             serializer = User_serializer(user , many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self,req):
-       
+
+    def post(self,req):      
         body = None
         try:
             email = self.request.data['email']
@@ -54,8 +54,10 @@ class UserView(ListAPIView):
         serializer = User_serializer(data = body , partial=True)
         serializer.is_valid( raise_exception= True)
         serializer.save()
+        send_otp(serializer.data['email'])
         return Response({"message" : "User Registered Succesfully"} , status = status.HTTP_200_OK)
-    
+
+
     def put(self,req):
         try:
             id = self.request.data['id']
@@ -86,6 +88,44 @@ class UserView(ListAPIView):
         else:
             return Response({"message" : "Invalid Request"} , status = status.HTTP_400_BAD_REQUEST)
         
+       
+
+
+
+class VerifyOTP(APIView):
+    def post(self,request):
+        try:
+            data = self.request.data
+            print ( data )
+            # serializer = VerifyAccountSerializer(d if serializer.is_valid():
+            email = self.request.data['email']
+            otp = self.request.data['otp']
+               
+            user_otp = User_otp.objects.filter(email = email)
+           
+            if user_otp.count() == 0:
+                return Response({
+                    'status' : 400,
+                    'message' : 'Something went wrong',
+                    'data' : 'Invalid email'
+                })
+                
+            if user_otp.first().otp != int(otp):
+                return Response({
+                    'status' : 400,
+                    'message' : 'Something went wrong',
+                    'data' : 'Wrong otp'
+                })
+            user_otp = User_otp.objects.filter(email = email).first().delete()  
+            return Response({
+                'status' : 200,
+                'message' : 'Account Verified',
+                'data' : {},
+            })
+
+        except Exception as e:
+            print(e)
+    
 
 
 
