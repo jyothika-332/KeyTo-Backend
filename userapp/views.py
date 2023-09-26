@@ -11,6 +11,10 @@ from .email import *
 from rest_framework import status
 from rest_framework.settings import api_settings
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.mail import send_mail
+import random
+from django.conf import settings
+
 
 
 
@@ -88,9 +92,47 @@ class UserView(ListAPIView):
         else:
             return Response({"message" : "Invalid Request"} , status = status.HTTP_400_BAD_REQUEST)
         
-       
+    
+    # def delete(self, request):
+    #     try:
+    #         id = self.request.data['id']
+    #     except:
+    #         id = ""
+
+    #     if id:
+    #         datas = User.objects.get(id=id).delete()           
+    #         return Response({
+    #             "message" : "Data Deleted Succesfully"
+    #         })
+    #     else:
+    #         return Response(
+    #             {
+    #                 "message" : "Id not Given"
+    #             }
+    #         )
+
+class SendOTP (APIView):
+    def post (self,request):
+        try:
 
 
+            email = self.request.data['email']
+
+            data = User.objects.filter(email = email)
+            if data.count():
+                return Response({"message" : "Email Already Exist"} , status = status.HTTP_409_CONFLICT)
+
+            else:
+                subject = 'Your account varification email'
+                otp = random.randint(1000 , 9999)
+                message = f'Your otp is {otp} '
+                email_from = settings.EMAIL_HOST
+                send_mail(subject , message , email_from ,[email])
+                user_obj = User_otp.objects.create(email = email,otp = otp)
+                user_obj.save()
+                return Response({"message" : "OTP Send to the Email"})
+        except Exception as e:
+            print(e)
 
 class VerifyOTP(APIView):
     def post(self,request):
@@ -127,7 +169,23 @@ class VerifyOTP(APIView):
             print(e)
     
 
-
+class AddtoPremium(APIView):
+    def put(self,request):
+        try:
+            id = self.request.data['id']
+            premium_starting = self.request.data['premium_starting']
+            premium_ending = self.request.data['premium_ending']
+        except:
+            return Response({ "message" : "Invalid Request"}, status = status.HTTP_400_BAD_REQUEST)
+        data = User.objects.filter(id=id)
+        if data.count():
+            datas = data.first()
+            serializer = User_serializer(datas,data=self.request.data,partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response({"message" : "Account Changed to Premium"})
+        else:
+            return Response({"message" : "User Not Found"} , status = status.HTTP_404_NOT_FOUND)
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer

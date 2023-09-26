@@ -12,3 +12,4 @@ def send_otp(email):
     send_mail(subject , message , email_from ,[email])
     user_obj = User_otp.objects.create(email = email,otp = otp)
     user_obj.save()
+    return True

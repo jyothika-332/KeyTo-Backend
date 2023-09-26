@@ -34,14 +34,36 @@ class PropertyView(ListAPIView):
         return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
     
 
-    def put(request,id):
+    def put(self,request):
         try:
-            property = Property.objects.filter(id=id)
+            id = self.request.data['id']
         except:
             return Response({'error':'Property not found'},status=status.HTTP_404_NOT_FOUND)
-
+        
+        property = Property.objects.get(id=id)
         serializer = Property_serializer(property,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request):
+        try:
+            id = self.request.data['id']
+        except:
+            id = ""
+
+        if id:
+            datas = Property.objects.get(id=id).delete()           
+            return Response({
+                "message" : "Property Deleted Succesfully"
+            })
+        else:
+            return Response(
+                {
+                    "message" : "Id not Given"
+                }
+            )
+        
+

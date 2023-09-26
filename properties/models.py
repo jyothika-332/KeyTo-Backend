@@ -10,7 +10,7 @@ class Property(models.Model):
     total_cent = models.BigIntegerField(default=None)
     price_per_cent = models.BigIntegerField(default=None)
     description = models.CharField(max_length=255,blank=True,null=True,default=None)
-    image = models.ImageField(upload_to='propertyImage',null=True,blank=True,default=None)
+    image = models.ImageField(upload_to='propertyImage',blank=True,default=None)
     is_rent = models.BooleanField(default=None)
     is_sell = models.BooleanField(default=None)
 
