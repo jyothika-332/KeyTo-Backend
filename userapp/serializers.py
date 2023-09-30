@@ -29,6 +29,4 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token    
 
 
-# class VerifyAccountSerializer(serializers.Serializer):
-#     email = serializers.EmailField()    
-#     otp = serializers.CharField()    
+   
