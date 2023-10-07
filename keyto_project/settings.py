@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'userapp',
     'properties',
     'bannerapp',
+    'paymentapp',
 
 ]
 
@@ -55,6 +56,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
+STRIPE_SECRET_KEY = 'sk_test_tR3PYbcVNZZ796tH88S4VQ2u'
 
 
 from datetime import timedelta

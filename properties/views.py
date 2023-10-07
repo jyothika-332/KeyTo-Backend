@@ -18,20 +18,29 @@ class PropertyView(ListAPIView):
 
         if id:
             property = Property.objects.get(id=id)
-            serializer = Property_serializer(property)
+            serializer = Property_serializer(property,many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             property = Property.objects.all()
-            serializer = Property_serializer(property)
+            serializer = Property_serializer(property,many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
 
     def post(self,request): 
-        serializer = Property_serializer(data=request.data,partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
+        print( self.request.data)
+        try:
+            user = User.objects.get(id=self.request.data['user'])
+        except:
+            return Response("User Not Found",status = status.HTTP_400_BAD_REQUEST)
+        serializer = Property_serializer(data=self.request.data , partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save( user = user)
+        # serializer = Property_serializer(data = self.request.data,partial=True)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data,status=status.HTTP_201_CREATED)
+        # return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
+        return Response("ok")
     
 
     def put(self,request):

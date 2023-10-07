@@ -17,5 +17,6 @@ urlpatterns = [
     path('send-otp/', SendOTP.as_view()),
     path('property/', include('properties.urls')),
     path('banner/', include('bannerapp.urls')),  
+    path('payment/', include('paymentapp.urls')),  
 ]
 urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
