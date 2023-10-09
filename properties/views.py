@@ -35,11 +35,7 @@ class PropertyView(ListAPIView):
         serializer = Property_serializer(data=self.request.data , partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save( user = user)
-        # serializer = Property_serializer(data = self.request.data,partial=True)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data,status=status.HTTP_201_CREATED)
-        # return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
+        
         return Response("ok")
     
 
