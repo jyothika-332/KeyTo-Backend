@@ -25,6 +25,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['role'] = user.role
         token['name'] = f'{user.first_name} {user.last_name}'
         token['is_active'] = user.is_active
+        token['is_premium'] = user.is_premium
 
         return token    
 

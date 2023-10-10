@@ -211,5 +211,25 @@ class MyTokenObtainPairView(TokenObtainPairView):
 #             return Response({ "message" : "Succesfully Loged In" , "data" : data} , status=status.HTTP_200_OK)
 #         else:
 #             return Response({ "message" : "Invalid Username and Password"} , status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePassword (ListAPIView):
+    def post(self,request):
+        try:
+            user = self.request.data['id']
+            oldpass = self.request.data['oldpass']
+            newpass = self.request.data['newpass']
+        except:
+            return Response({"message" : "Invalid Request"} , stats = status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.get(id = user)
+       
+        if  (check_password(oldpass, user.password)):
+            hashed_password = make_password(newpass)
+            user.password = hashed_password
+            user.save()
+            return Response({"message" : "Password Updated Succesfully"} , status = status.HTTP_200_OK)
+        else:
+            return Response({"message" : "Old Password Does Not Match"} , status = status.HTTP_400_BAD_REQUEST)
         
 
