@@ -47,22 +47,7 @@ class PropertyView(ListAPIView):
             serializer = Property_serializer(property,many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # def get(self,request):
-    #     try:
-    #         id = self.request.GET.get("id")
-    #         print(id)
-    #     except:
-    #         id = ""
-
-    #     if id:
-    #         property = Property.objects.get(id=id)
-    #         serializer = Property_serializer(property,many=True)
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-    #     else:
-    #         property = Property.objects.all()
-    #         serializer = Property_serializer(property,many=True)
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-        
+    
 
     def post(self,request): 
         print( self.request.data)
