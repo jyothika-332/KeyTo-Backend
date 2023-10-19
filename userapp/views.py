@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,UpdateAPIView
 from rest_framework.views import APIView
 
 from rest_framework.response import Response
@@ -19,6 +19,17 @@ from django.conf import settings
 
 # Create your views here.
 
+class UpdateSeller(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = User_serializer
+
+    def partial_update(self, request, *args, **kwargs):
+        # Exclude id_card_image from the request data before performing the update
+        if 'id_card_image' in request.data:
+            del request.data['id_card_image']
+
+        return super().partial_update(request, *args, **kwargs)
+
 
 class UserView(ListAPIView):
     def get(self,req):  
@@ -35,6 +46,9 @@ class UserView(ListAPIView):
             user = User.objects.all()
             serializer = User_serializer(user , many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    
+
 
 
     def post(self,req):      
@@ -92,23 +106,6 @@ class UserView(ListAPIView):
             return Response({"message" : "Invalid Request"} , status = status.HTTP_400_BAD_REQUEST)
         
     
-    # def delete(self, request):
-    #     try:
-    #         id = self.request.data['id']
-    #     except:
-    #         id = ""
-
-    #     if id:
-    #         datas = User.objects.get(id=id).delete()           
-    #         return Response({
-    #             "message" : "Data Deleted Succesfully"
-    #         })
-    #     else:
-    #         return Response(
-    #             {
-    #                 "message" : "Id not Given"
-    #             }
-    #         )
 
 class SendOTP (APIView):
     def post (self,request):
@@ -133,6 +130,7 @@ class SendOTP (APIView):
         except Exception as e:
             print(e)
 
+
 class VerifyOTP(APIView):
     def post(self,request):
         try:
@@ -145,24 +143,12 @@ class VerifyOTP(APIView):
             user_otp = User_otp.objects.filter(email = email)
            
             if user_otp.count() == 0:
-                return Response({
-                    'status' : 400,
-                    'message' : 'Something went wrong',
-                    'data' : 'Invalid email'
-                })
+                return Response("Invalid OTP",status = status.HTTP_400_BAD_REQUEST)
                 
             if user_otp.first().otp != int(otp):
-                return Response({
-                    'status' : 400,
-                    'message' : 'Something went wrong',
-                    'data' : 'Wrong otp'
-                })
-            user_otp = User_otp.objects.filter(email = email).first().delete()  
-            return Response({
-                'status' : 200,
-                'message' : 'Account Verified',
-                'data' : {},
-            })
+                return Response("Invalid OTP",status = status.HTTP_400_BAD_REQUEST)
+            user_otp = User_otp.objects.filter(email = email).delete()
+            return Response("OTP OK",status = status.HTTP_200_OK)
 
         except Exception as e:
             print(e)
@@ -186,30 +172,10 @@ class AddtoPremium(APIView):
         else:
             return Response({"message" : "User Not Found"} , status = status.HTTP_404_NOT_FOUND)
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
    
-# class LoginView(ListAPIView):
-#     def post(self,req):
-#         try:
-#             username = self.request.data['email']
-#             password = self.request.data['password']
-#         except:
-#             return Response({ "message" : "Invalid Request"} , status=status.HTTP_400_BAD_REQUEST)
-        
-#         try:
-#             user = User.objects.get(email=username)
-#         except User.DoesNotExist:
-#             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-#         if check_password(password, user.password):
-#             data = {
-#                 "id" : user.id,
-#                 "role" : user.role
-#             }
-#             return Response({ "message" : "Succesfully Loged In" , "data" : data} , status=status.HTTP_200_OK)
-#         else:
-#             return Response({ "message" : "Invalid Username and Password"} , status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePassword (ListAPIView):
