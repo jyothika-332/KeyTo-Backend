@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.generics import ListAPIView,UpdateAPIView
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,10 +15,16 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 import random
 from django.conf import settings
-
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from rest_framework.pagination import PageNumberPagination
 
 
 # Create your views here.
+class CustomPagination(PageNumberPagination):
+    page_size = 5  # Number of items per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class UpdateSeller(UpdateAPIView):
     queryset = User.objects.all()
@@ -32,6 +39,7 @@ class UpdateSeller(UpdateAPIView):
 
 
 class UserView(ListAPIView):
+    pagination_class = CustomPagination
     def get(self,req):  
         try:
             id = self.request.GET.get("id")
@@ -43,8 +51,12 @@ class UserView(ListAPIView):
             serializer = User_serializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            user = User.objects.all()
-            serializer = User_serializer(user , many=True)
+            # user = User.objects.all()
+            # serializer = User_serializer(user , many=True)
+            # return Response(serializer.data, status=status.HTTP_200_OK)
+            paginator = CustomPagination()
+            result_page = paginator.paginate_queryset(User.objects.all(), req)
+            serializer = User_serializer(result_page, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
     
@@ -78,15 +90,15 @@ class UserView(ListAPIView):
     def put(self,req):
         try:
             id = self.request.data['id']
-        except:
-            id = ""
+        except KeyError:
+            id = ""   
         if id:
             datas = User.objects.filter(id=id)
             if datas.count() > 0 :
                 datas = datas.first()
                 try:
                     password = self.request.data['password']
-                except:
+                except KeyError:
                     password = ""
                 if password:
                     body = self.request.data
@@ -175,8 +187,48 @@ class AddtoPremium(APIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-   
 
+class SendResetLink(ListAPIView):
+    def post(self,request):
+        try:
+            email = self.request.data['email']
+        except:
+            return Response({"message" : "Invalid Request"} , stats = status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.filter(username = email)
+
+        if user.count():
+            user  = user.first()
+            token = default_token_generator.make_token(user)
+            reset_url = "Your Password Reset Link is Here Please Click "f"http://localhost:5173/reset-password/{user.id}/{token}"
+            subject = 'Password Reset'
+            message = reset_url
+            email_from = settings.EMAIL_HOST
+            send_mail(subject , message , email_from ,[email]) 
+            return Response({"message" : "ok"} , status= status.HTTP_200_OK)
+        else:
+            return Response({"message" : "This Email is Not Registered"} , status= status.HTTP_400_BAD_REQUEST)
+
+class ResetPassword(ListAPIView):
+    def post(self,request):
+        try:
+            token = self.request.data['token']
+            password = self.request.data['password']
+            user_id = self.request.data['user']
+        except:
+            return Response({"message" : "Invalid Request"} , stats = status.HTTP_400_BAD_REQUEST)
+    
+        try:
+            user = User.objects.get(pk=user_id)
+            if default_token_generator.check_token(user, token):
+                password = make_password(password)
+                user.password = password
+                user.save()
+                return Response({"message" : "Password Changed Succesfully"},status = status.HTTP_200_OK)
+            else:
+                return Response({"message" : "Token is Invalid"} , status = status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({"message" : "User Does Not Exist"} , status = status.HTTP_400_BAD_REQUEST)
 
 class ChangePassword (ListAPIView):
     def post(self,request):

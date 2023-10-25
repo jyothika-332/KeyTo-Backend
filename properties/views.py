@@ -4,6 +4,7 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics
 
 
 
@@ -23,29 +24,50 @@ class PropertyView(ListAPIView):
           user = ""
         
         try:
+          price = self.request.GET.get("price")
+        except:
+          price = ""
+
+        try:
+          place = self.request.GET.get("place")
+        except:
+          place = ""
+        
+        try:
             is_premium = self.request.GET.get("is_premium")
         except:
             is_premium = False
 
-
+        property = Property.objects.all()
 
         if id:
-            property = Property.objects.get(id=id)
+            property = property.objects.get(id=id)
             serializer = Property_serializer(property,many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            if user: 
-                property = Property.objects.filter(user__id = user)
-            else:
-                if is_premium:
-                    property = Property.objects.filter(user__is_premium = True)[:6]
+        if user:
+            property = property.filter(user__id = user)
 
-                else:
-                    property = Property.objects.all()
+        if place :
+            property = property.filter(location__icontains = place)
+        if price :
+            property = property.filter(price_per_cent__lte=price )
+  
+        
+        if is_premium :
+            property = property.filter(user__is_premium = True)[:6]
+        # else:
+        #     if user: 
+        #         property = Property.objects.filter(user__id = user)
+        #     else:
+        #         if is_premium:
+        #             property = Property.objects.filter(user__is_premium = True)[:6]
+
+        #         else:
+        #             property = Property.objects.all()
 
 
-            serializer = Property_serializer(property,many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = Property_serializer(property,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     
 
