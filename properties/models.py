@@ -20,6 +20,7 @@ class Property(models.Model):
     description = models.CharField(max_length=255,blank=True,null=True,default=None)
     image = models.ImageField(upload_to='propertyImage',blank=True,default=None,null=True)
     type = models.CharField( max_length=30, default=None, choices=CHOICES,null=True,blank=True)
+    is_sold = models.BooleanField(default=False)
 
 
 class PropertyImage(models.Model):

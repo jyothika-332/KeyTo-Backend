@@ -4,9 +4,8 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import generics
-
-
+from userapp.models import *
+from properties.models import *
 
 # Create your views here.
 
@@ -39,10 +38,13 @@ class PropertyView(ListAPIView):
             is_premium = False
 
         property = Property.objects.all()
-
+        if user:
+            property = Property.objects.all()
+        else:
+            property = property.filter(is_sold = False)
         if id:
-            property = property.objects.get(id=id)
-            serializer = Property_serializer(property,many=True)
+            property = property.get(id=id)
+            serializer = Property_serializer(property)
             return Response(serializer.data, status=status.HTTP_200_OK)
         if user:
             property = property.filter(user__id = user)
@@ -55,16 +57,6 @@ class PropertyView(ListAPIView):
         
         if is_premium :
             property = property.filter(user__is_premium = True)[:6]
-        # else:
-        #     if user: 
-        #         property = Property.objects.filter(user__id = user)
-        #     else:
-        #         if is_premium:
-        #             property = Property.objects.filter(user__is_premium = True)[:6]
-
-        #         else:
-        #             property = Property.objects.all()
-
 
         serializer = Property_serializer(property,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -117,3 +109,44 @@ class PropertyView(ListAPIView):
             )
         
 
+class DashboardDatasViews(ListAPIView):
+    def get(self,req):
+        user_count = User.objects.filter(role = 'user').count()
+        premium = User.objects.filter(role = 'seller' , is_premium = True).count()
+        not_premium = User.objects.filter(role = 'seller' , is_premium = False).count()
+        seller_count = User.objects.filter(role = 'seller').count()
+        sold_property = Property.objects.filter(is_sold = True).count()
+        not_sold_property = Property.objects.filter(is_sold = False).count()
+        rent_property = Property.objects.filter(type = 'rent').count()
+        sale_property = Property.objects.filter(type = 'sale').count()
+
+        data = {
+            'user_count' : user_count,
+            'seller_count' : seller_count,
+            "sold_property" : sold_property,
+                "not_sold_property" : not_sold_property,
+                "premium" : premium,
+"not_premium" : not_premium,
+"rent_property" : rent_property,
+"sale_property" : sale_property,
+        }
+
+        return Response(data,status=status.HTTP_200_OK)
+
+class DashboardDatasViewsSeller(ListAPIView):
+    def get(self,req):
+        try:
+            id = self.request.GET.get("id")
+        except:
+            id = ""
+        if id:
+            propertyes = Property.objects.filter(user__id = id).count()
+            sold = Property.objects.filter(user__id = id , is_sold = True).count()
+       
+
+        data = {
+            'property' : propertyes,
+            'sold' : sold
+        }
+
+        return Response(data,status=status.HTTP_200_OK)

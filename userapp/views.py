@@ -51,17 +51,12 @@ class UserView(ListAPIView):
             serializer = User_serializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            # user = User.objects.all()
-            # serializer = User_serializer(user , many=True)
-            # return Response(serializer.data, status=status.HTTP_200_OK)
             paginator = CustomPagination()
             result_page = paginator.paginate_queryset(User.objects.all(), req)
             serializer = User_serializer(result_page, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
     
-
-
 
     def post(self,req):      
         body = None
@@ -85,6 +80,7 @@ class UserView(ListAPIView):
         serializer.save()
         send_otp(serializer.data['email'])
         return Response({"message" : "User Registered Succesfully"} , status = status.HTTP_200_OK)
+
 
 
     def put(self,req):
@@ -136,8 +132,16 @@ class SendOTP (APIView):
                 message = f'Your otp is {otp} '
                 email_from = settings.EMAIL_HOST
                 send_mail(subject , message , email_from ,[email])
-                user_obj = User_otp.objects.create(email = email,otp = otp)
-                user_obj.save()
+                is_present = User_otp.objects.filter(email = email).count()
+                if is_present == 0 :
+                    user_obj = User_otp.objects.create(email = email,otp = otp)
+                    user_obj.save()
+
+                else:
+                    user_obj = User_otp.objects.get(email = email)
+                    user_obj.email = email
+                    user_obj.otp = otp
+                    user_obj.save()
                 return Response({"message" : "OTP Send to the Email"})
         except Exception as e:
             print(e)
