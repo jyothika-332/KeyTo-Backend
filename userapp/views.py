@@ -45,7 +45,25 @@ class UserView(ListAPIView):
             id = self.request.GET.get("id")
         except:
             id = ""
+        try:
+            is_seller = self.request.GET.get("is_seller")
+        except:
+            is_seller = False
+        
+        try:
+            search = self.request.GET.get("search")
+        except:
+            search = ""
 
+        print( is_seller )
+        if is_seller == "true":
+            print("ok")
+            user = User.objects.filter(role = "seller")
+            if search:
+                user = user.filter(first_name__icontains = search)
+            serializer = User_serializer(user,many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        print("Not word")
         if id:
             user = User.objects.get(id=id)
             serializer = User_serializer(user)

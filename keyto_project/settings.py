@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,6 +133,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "keyto_project.asgi.application"
 WSGI_APPLICATION = 'keyto_project.wsgi.application'
 
 
@@ -147,6 +149,18 @@ DATABASES = {
         'HOST': 'localhost', 
     }
 }
+
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'KEYTO': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
