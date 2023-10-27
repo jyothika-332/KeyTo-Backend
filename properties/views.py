@@ -42,6 +42,7 @@ class PropertyView(ListAPIView):
             property = Property.objects.all()
         else:
             property = property.filter(is_sold = False)
+        
         if id:
             property = property.get(id=id)
             serializer = Property_serializer(property)
@@ -124,11 +125,11 @@ class DashboardDatasViews(ListAPIView):
             'user_count' : user_count,
             'seller_count' : seller_count,
             "sold_property" : sold_property,
-                "not_sold_property" : not_sold_property,
-                "premium" : premium,
-"not_premium" : not_premium,
-"rent_property" : rent_property,
-"sale_property" : sale_property,
+            "not_sold_property" : not_sold_property,
+            "premium" : premium,
+            "not_premium" : not_premium,
+            "rent_property" : rent_property,
+            "sale_property" : sale_property,
         }
 
         return Response(data,status=status.HTTP_200_OK)
@@ -142,11 +143,15 @@ class DashboardDatasViewsSeller(ListAPIView):
         if id:
             propertyes = Property.objects.filter(user__id = id).count()
             sold = Property.objects.filter(user__id = id , is_sold = True).count()
+            rent_prpty = Property.objects.filter(user_id = id ,type = 'rent').count()
+            sale_prpty = Property.objects.filter(user_id = id ,type = 'sale').count()
        
 
         data = {
             'property' : propertyes,
-            'sold' : sold
+            'sold' : sold,
+            'rent_prpty' : rent_prpty,
+            'sale_prpty' : sale_prpty
         }
 
         return Response(data,status=status.HTTP_200_OK)
