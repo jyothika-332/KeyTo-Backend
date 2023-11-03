@@ -154,7 +154,7 @@ DATABASES = {
 
 CHANNEL_LAYERS = {
     'default': {
-        'KEYTO': 'channels_redis.core.RedisChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [('localhost', 6379)],
         },

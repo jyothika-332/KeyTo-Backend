@@ -155,3 +155,69 @@ class DashboardDatasViewsSeller(ListAPIView):
         }
 
         return Response(data,status=status.HTTP_200_OK)
+    
+
+class User_Comments(ListAPIView):
+    def get(self,request):
+        try:
+            property_id = self.request.GET.get("property_id")
+        except:
+            property_id = ""
+        print(property_id)
+        if property_id:
+            data = Comments.objects.filter(property__id = property_id)
+            serializers = Comments_serializer(data,many=True)
+            return Response(serializers.data,status = status.HTTP_200_OK)
+        return Response("ok",status = status.HTTP_200_OK)
+
+    
+        
+
+    def post(self,request): 
+        try:
+            user = User.objects.get(id=self.request.data['user'])
+        except:
+            return Response("User Not Found",status = status.HTTP_400_BAD_REQUEST)
+        try:
+            property = Property.objects.get(id=self.request.data['property_id'])
+        except:
+            return Response("Property Not Found",status = status.HTTP_400_BAD_REQUEST)
+        
+        serializer = Comments_serializer(data=self.request.data , partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save( user = user , property = property )
+        
+        return Response("ok")
+    
+
+    def put(self,request):
+        try:
+            id = self.request.data['id']
+        except:
+            return Response({'error':'Comment not found'},status=status.HTTP_404_NOT_FOUND)
+        
+        comment = Comments.objects.get(id=id)
+        serializer = Comments_serializer(comment,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def delete(self, request):
+        try:
+            id = self.request.data['id']
+        except:
+            id = ""
+
+        if id:
+            datas = Comments.objects.get(id=id).delete()           
+            return Response({
+                "message" : "comment Deleted Succesfully"
+            })
+        else:
+            return Response(
+                {
+                    "message" : "Id not Given"
+                }
+            )

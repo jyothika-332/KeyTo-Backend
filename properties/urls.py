@@ -6,4 +6,5 @@ urlpatterns = [
    path ('',PropertyView.as_view()),
    path ('dashboard_datas/',DashboardDatasViews.as_view()),
    path ('agent_dashboard/',DashboardDatasViewsSeller.as_view()),
+   path ('comments/',User_Comments.as_view()),
 ]

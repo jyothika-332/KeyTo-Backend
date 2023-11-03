@@ -8,6 +8,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         current_user_id = int(self.scope["query_string"])
         other_user_id = self.scope["url_route"]["kwargs"]["id"]
+        
         self.room_name = (
             f"{current_user_id}_{other_user_id}"
             if int(current_user_id) > int(other_user_id)
@@ -84,5 +85,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, sender,reciever, message, thread_name):
         from .serializers import MessageSerializer
-        from .models import Message
+        from .models import Message,ChatList
+        # if not ChatList.objects.filter(sender=sender,receiver=reciever).exists():
+            # ChatList.objects.create(sender=sender, receiver=reciever)
         Message.objects.create(sender=sender, receiver=reciever, message=message, thread_name=thread_name)

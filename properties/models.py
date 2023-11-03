@@ -26,3 +26,9 @@ class Property(models.Model):
 class PropertyImage(models.Model):
     property_id = models.ForeignKey(Property,on_delete=models.CASCADE)
     image = models.ImageField()
+
+
+class Comments(models.Model):
+    user =  models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True,blank=True)
+    property =  models.ForeignKey(Property, on_delete=models.CASCADE,default=None,null=True,blank=True)
+    review = models.CharField(max_length=500,blank=True,null=True,default=None)
