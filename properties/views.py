@@ -6,10 +6,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from userapp.models import *
 from properties.models import *
+from userapp.views import CustomPagination
 
 # Create your views here.
 
 class PropertyView(ListAPIView):
+    pagination_class = CustomPagination
     def get(self,request):
         try:
             id = self.request.GET.get("id")
@@ -47,6 +49,11 @@ class PropertyView(ListAPIView):
             property = property.get(id=id)
             serializer = Property_serializer(property)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        # else:
+        #     paginator = CustomPagination()
+        #     result_page = paginator.paginate_queryset(Property.objects.all(), request)
+        #     serializer = Property_serializer(result_page,many=True)
+        
         if user:
             property = property.filter(user__id = user)
 
