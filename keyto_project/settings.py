@@ -14,13 +14,14 @@ from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+from decouple import config
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$b2iv@-!d&jriu04yiu6$0s_23-an_zw^ue)y&m0uju5vo)3%1'
+SECRET_KEY = config('django_secret_key')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -51,6 +52,9 @@ INSTALLED_APPS = [
     'paymentapp',
     'chat',
 
+    'cloudinary_storage',
+    'cloudinary',
+
 ]
 
 
@@ -62,7 +66,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 2,
 }
 
-STRIPE_SECRET_KEY = 'sk_test_tR3PYbcVNZZ796tH88S4VQ2u'
+STRIPE_SECRET_KEY = config('stripe_secret_key')
+
 
 
 from datetime import timedelta
@@ -143,10 +148,10 @@ WSGI_APPLICATION = 'keyto_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'keyto_db',
-        'USER': 'postgres',
-        'PASSWORD': 'jyothi',
-        'HOST': 'localhost', 
+        'NAME': config('db_name'),
+        'USER': config('db_user'),
+        'PASSWORD': config('password'),
+        'HOST': config('db_host'), 
     }
 }
 
@@ -164,10 +169,10 @@ CHANNEL_LAYERS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com' 
-EMAIL_HOST_USER = 'jyothikact10@gmail.com'
-EMAIL_HOST_PASSWORD = 'htnvwvfsquztckmi'
-EMAIL_PORT = 587
+EMAIL_HOST = config('email_host') 
+EMAIL_HOST_USER = config('email_host_user')
+EMAIL_HOST_PASSWORD = config('email_host_password')
+EMAIL_PORT = config('email_port')
 
 
 # Password validation
@@ -217,6 +222,12 @@ AUTH_USER_MODEL = 'userapp.User'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY':  config('CLOUDINARY_API_KEY'),
+    'API_SECRET':  config('CLOUDINARY_API_SECRET'),
+}
 
 
 MEDIA_URL = '/media/'
