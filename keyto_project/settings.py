@@ -221,6 +221,7 @@ AUTH_USER_MODEL = 'userapp.User'
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    'https://key-to-frontend.vercel.app',
 ]
 
 CLOUDINARY_STORAGE = {
