@@ -6,11 +6,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from userapp.models import *
 from properties.models import *
-from userapp.views import CustomPagination
+from rest_framework.pagination import PageNumberPagination
+
 
 # Create your views here.
 
-
+class CustomPagination(PageNumberPagination):
+    page_size = 3  # Number of items per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class PropertyView(ListAPIView):
@@ -71,10 +75,7 @@ class PropertyView(ListAPIView):
             result_page = paginator.paginate_queryset(property, request)
             serializer = Property_serializer(result_page, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-            # serializer = Property_serializer(property,many=True)
-            # return Response(serializer.data, status=status.HTTP_200_OK)
 
-    
 
     def post(self,request): 
         print( self.request.data)

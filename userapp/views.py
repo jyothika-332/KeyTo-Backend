@@ -21,7 +21,7 @@ from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
-    page_size = 3  # Number of items per page
+    page_size = 5  # Number of items per page
     page_size_query_param = 'page_size'
     max_page_size = 100
 
