@@ -10,6 +10,9 @@ from userapp.views import CustomPagination
 
 # Create your views here.
 
+
+
+
 class PropertyView(ListAPIView):
     pagination_class = CustomPagination
     def get(self,request):
@@ -49,25 +52,27 @@ class PropertyView(ListAPIView):
             property = property.get(id=id)
             serializer = Property_serializer(property)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        # else:
-        #     paginator = CustomPagination()
-        #     result_page = paginator.paginate_queryset(Property.objects.all(), request)
-        #     serializer = Property_serializer(result_page,many=True)
+        else:
+            
         
-        if user:
-            property = property.filter(user__id = user)
+            if user:
+                property = property.filter(user__id = user)
 
-        if place :
-            property = property.filter(location__icontains = place)
-        if price :
-            property = property.filter(price_per_cent__lte=price )
-  
-        
-        if is_premium :
-            property = property.filter(user__is_premium = True)[:6]
-
-        serializer = Property_serializer(property,many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            if place :
+                property = property.filter(location__icontains = place)
+            if price :
+                property = property.filter(price_per_cent__lte=price )
+    
+            
+            if is_premium :
+                property = property.filter(user__is_premium = True)[:6]
+            
+            paginator = CustomPagination()
+            result_page = paginator.paginate_queryset(property, request)
+            serializer = Property_serializer(result_page, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+            # serializer = Property_serializer(property,many=True)
+            # return Response(serializer.data, status=status.HTTP_200_OK)
 
     
 

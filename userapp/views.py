@@ -21,7 +21,7 @@ from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
-    page_size = 5  # Number of items per page
+    page_size = 3  # Number of items per page
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -114,6 +114,10 @@ class UserView(ListAPIView):
                     password = self.request.data['password']
                 except KeyError:
                     password = ""
+                try:
+                    type = self.request.data['type']
+                except KeyError:
+                    type = ""
                 if password:
                     body = self.request.data
                     body['password'] = make_password(password)
@@ -124,7 +128,19 @@ class UserView(ListAPIView):
                     serializer = User_serializer(datas , data = self.request.data , partial=True)
                     serializer.is_valid( raise_exception=True)
                     serializer.save()
-
+                
+                if type == "status":
+                    print("THE IS ACTIVE" , self.request.data['is_active'])
+                    if self.request.data['is_active'] == True:
+                        subject = 'Account Status Changed',
+                        message = "Hi , Your Account is Activated Now"
+                        email_from = settings.EMAIL_HOST
+                        send_mail(subject , message , email_from ,[self.request.data['email']])
+                    else:
+                        subject = 'Account Status Changed',
+                        message = "Hi , Your Account is Deactivated Now"
+                        email_from = settings.EMAIL_HOST
+                        send_mail(subject , message , email_from ,[self.request.data['email']])
                 return Response({"message" : "User Updated Succesfully"} , status = status.HTTP_200_OK)
             else:
                 return Response({"message" : "User Not Found"} , status = status.HTTP_204_NO_CONTENT)
