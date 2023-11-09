@@ -13,7 +13,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=255,null=True,blank=True,default=None)
     last_name = models.CharField(max_length=255,null=True,blank=True,default=None)
     password = models.CharField(max_length=255,null=True,blank=True,default=None)
-    phone = models.CharField(max_length=255,null=True,blank=True,default=None)
+    phone = models.CharField(max_length=10,null=True,blank=True,default=None)
     email = models.CharField(max_length=255,null=True,blank=True,default=None)
     role = models.CharField( max_length=30, default='user', choices=ROLE_CHOICES)
     is_premium = models.BooleanField(null=True,blank=True,default=False)
