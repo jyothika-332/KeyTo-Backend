@@ -285,3 +285,7 @@ class ChangePassword (ListAPIView):
             return Response({"message" : "Old Password Does Not Match"} , status = status.HTTP_400_BAD_REQUEST)
         
 
+class BecomeSeller(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = BecomeSellerSerializer
+    lookup_field = 'id'

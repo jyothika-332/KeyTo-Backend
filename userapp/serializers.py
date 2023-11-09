@@ -28,6 +28,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['is_premium'] = user.is_premium
 
         return token    
+    
+class BecomeSellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['phone', 'address', 'role', 'location', 'id_card_image']
+    
+    def update(self, instance, validated_data):
+        instance.role = 'seller'
+        instance.save()
+        return super().update(instance, validated_data)
+
 
 
    
