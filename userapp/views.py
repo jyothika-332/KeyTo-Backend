@@ -235,7 +235,7 @@ class SendResetLink(ListAPIView):
         if user.count():
             user  = user.first()
             token = default_token_generator.make_token(user)
-            reset_url = "Your Password Reset Link is Here Please Click "f"http://localhost:5173/reset-password/{user.id}/{token}"
+            reset_url = "Your Password Reset Link is Here Please Click "f"https://keyto.onrender.com/reset-password/{user.id}/{token}"
             subject = 'Password Reset'
             message = reset_url
             email_from = settings.EMAIL_HOST
