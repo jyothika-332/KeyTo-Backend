@@ -223,9 +223,9 @@ AUTH_USER_MODEL = 'userapp.User'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
+    'https://keyto.cloud',
     'http://localhost:5173',
     'https://key-to-frontend.vercel.app',
-    'https://keyto.cloud',
 ]
 
 CLOUDINARY_STORAGE = {
