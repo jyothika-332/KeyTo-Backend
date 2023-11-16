@@ -14,7 +14,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=255,null=True,blank=True,default=None)
     password = models.CharField(max_length=255,null=True,blank=True,default=None)
     phone = models.CharField(max_length=10, null=True, blank=True, default=None)
-    email = models.CharField(max_length=255,null=True,blank=True,default=None)
+    email = models.CharField(max_length=255,unique=True)
     role = models.CharField( max_length=30, default='user', choices=ROLE_CHOICES)
     is_premium = models.BooleanField(null=True,blank=True,default=False)
     premium_starting = models.DateField(null=True,default=None,blank=True)
@@ -25,6 +25,8 @@ class User(AbstractUser):
     profile_image = models.ImageField(upload_to='profileImage',null=True,blank=True,default=None)
     id_card_image = models.ImageField(upload_to='IDcard',null=True,blank=True,default=None)
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
 class User_otp(models.Model):
     email = models.CharField(max_length=250,null=True,blank=True,default=None)
