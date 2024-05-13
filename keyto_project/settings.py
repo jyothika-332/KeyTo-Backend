@@ -225,7 +225,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'https://keyto.cloud',
     'http://localhost:5173',
-    'https://key-to-frontend.vercel.app',
+    'https://key-to.vercel.app',
 ]
 
 CLOUDINARY_STORAGE = {
